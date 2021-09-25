@@ -1,3 +1,11 @@
 extras/
-mnt/
+cplint/
 .vscode
+*.o
+cpplint.py
+execute.sh
+filter_options
+client
+server
+makefile
+common_wrap_socket.c
