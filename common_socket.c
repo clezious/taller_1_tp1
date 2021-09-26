@@ -4,7 +4,27 @@
 #include <netdb.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdbool.h>
 #define MAX_REINTENTOS 5
+#define MAX_POOL_CONEXIONES 32
+
+// Guarda en direccion un addrinfo con el host y servicio indicados
+// servidor es un bool que indica si la direccion es 
+// para un servidor o un cliente
+// si servidor es true, se utiliza el flag AI_PASSIVE, si no, NULL.
+void _getaddrinfo(struct addrinfo **direccion, 
+                  const char *host, 
+                  const char * servicio, 
+                  bool servidor){
+    struct addrinfo hints;
+    memset(&hints, 0, sizeof(struct addrinfo));
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_STREAM;
+    if (servidor == true){
+        hints.ai_flags = AI_PASSIVE;
+    }
+    getaddrinfo(host, servicio, &hints, direccion);
+}
 
 void socket_crear(socket_t *self){    
     self->file_descriptor = socket(AF_INET, SOCK_STREAM, 0);    
@@ -16,14 +36,21 @@ void socket_destruir(socket_t *self){
 
 void socket_conectar(socket_t *self, const char *host, const char *servicio){
     struct addrinfo *direccion;
-    struct addrinfo hints;
-    memset(&hints, 0, sizeof(struct addrinfo));
-    hints.ai_family = AF_INET;
-    hints.ai_socktype = SOCK_STREAM;
-    hints.ai_flags = 0;
-    getaddrinfo(host, servicio, &hints, &direccion);            
+    _getaddrinfo(&direccion, host, servicio, false);
     connect(self->file_descriptor, direccion->ai_addr, direccion->ai_addrlen);
     freeaddrinfo(direccion);
+}
+
+void socket_escuchar(socket_t *self, const char *host, const char *servicio){
+    struct addrinfo *direccion;
+    _getaddrinfo(&direccion, host, servicio, true);
+    bind(self->file_descriptor, direccion->ai_addr, direccion->ai_addrlen);
+    freeaddrinfo(direccion);
+    listen(self->file_descriptor,MAX_POOL_CONEXIONES);
+}
+
+void socket_aceptar_conexion(socket_t *self, socket_t *cliente){    
+    cliente->file_descriptor = accept(self->file_descriptor, NULL, NULL);
 }
 
 ssize_t socket_enviar(socket_t *self, const char *buffer, size_t longitud){    
@@ -44,4 +71,17 @@ ssize_t socket_enviar(socket_t *self, const char *buffer, size_t longitud){
         }
     }    
     return bytes_enviados_totales;
+}
+
+ssize_t socket_recibir(socket_t *self, char *buffer, size_t longitud){
+    ssize_t bytes_recibidos_totales = 0;
+    ssize_t bytes_recibidos;    
+    while ((bytes_recibidos_totales < longitud)){
+        bytes_recibidos = recv(self->file_descriptor,
+                              &buffer[bytes_recibidos_totales],
+                              longitud - bytes_recibidos_totales,
+                              0);
+        bytes_recibidos_totales += bytes_recibidos;        
+    }    
+    return bytes_recibidos_totales;
 }

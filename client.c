@@ -41,8 +41,8 @@ int main(){
     ssize_t bytes_enviados = 0;
     socket_crear(&socket);
     socket_conectar(&socket, "localhost", "7777");
-    char buffer[] = "Hola Mundo\n";
-    bytes_enviados = socket_enviar(&socket, buffer, strlen(buffer));            
+    char buffer[] = "Hola Mundo         \n";    
+    bytes_enviados = socket_enviar(&socket, buffer, strlen(buffer));        
     printf("%ld\n", bytes_enviados);
     socket_destruir(&socket);
     return 0;    
