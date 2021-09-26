@@ -49,7 +49,7 @@ int ahorcado_estado(ahorcado_t *self){
     printf("%s\n",self->palabra_adivinada);
     printf("%d\n",self->intentos);
     printf("%d\n",self->juego_finalizado);
-    if(self->juego_finalizado){
+    if (self->juego_finalizado){
         return 1;
     }
     return 0;
