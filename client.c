@@ -18,7 +18,7 @@ void _leer_palabra(char **cadena){
     }    
     if (bytes_leidos==-1){
         return;
-    };    
+    }    
 }
 
 void cliente_crear(cliente_t *self, char *host, char *servicio){
@@ -70,7 +70,7 @@ int main(int argc, char *argv[]){
         for (int i = 0; i < strlen(buffer); i++){
             socket_enviar(&cliente.socket, &buffer[i], 1);            
             cliente_recibir_de_servidor(&cliente);            
-        };
+        }
         free(buffer);        
     }    
     cliente_destruir(&cliente);    

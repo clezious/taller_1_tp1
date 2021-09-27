@@ -8,7 +8,7 @@
 #include "server.h"
 
 int servidor_crear(servidor_t *self, char *servicio, char *archivo_palabras){
-    if ((self->archivo_palabras = fopen(archivo_palabras,"r")) == NULL){                
+    if ((self->archivo_palabras = fopen(archivo_palabras,"r")) == NULL){
         return 1;
     }
     socket_crear(&self->socket);
@@ -31,7 +31,7 @@ int servidor_iniciar_juego(servidor_t *self, uint8_t intentos){
     size_t bytes_palabra = 0;
     char *palabra = NULL;
     char * ptr;
-    if(getline(&palabra, &bytes_palabra, self->archivo_palabras) != -1){
+    if (getline(&palabra, &bytes_palabra, self->archivo_palabras) != -1){
         // Longitud máxima de palabra por consigna (16 bits)            
         if (bytes_palabra >= 65536){
             free(palabra);
@@ -44,7 +44,7 @@ int servidor_iniciar_juego(servidor_t *self, uint8_t intentos){
         ahorcado_crear(&self->ahorcado,palabra,intentos);
         free(palabra);
         return 0;
-    };
+    }
     free(palabra);
     return -1;    
 }
@@ -68,8 +68,12 @@ void servidor_enviar_datos_cliente(servidor_t *self){
         palabra_a_enviar = self->ahorcado.palabra;
     }
     socket_enviar(&self->socket_cliente, (char*)&primer_byte, 1);
-    socket_enviar(&self->socket_cliente, (char*)&self->ahorcado.longitud_palabra, 2);
-    socket_enviar(&self->socket_cliente, palabra_a_enviar, self->ahorcado.longitud_palabra);
+    socket_enviar(&self->socket_cliente,
+                  (char*)&self->ahorcado.longitud_palabra,
+                  2);
+    socket_enviar(&self->socket_cliente,
+                  palabra_a_enviar,
+                  self->ahorcado.longitud_palabra);
 }
 void servidor_recibir_datos_cliente(servidor_t *self){
     char letra = 0;
@@ -85,14 +89,14 @@ int main(int argc, char *argv[]){
     long intentos = strtol(argv[2], NULL, 10);
     if (intentos >= 128){
         return 1; //Valor máximo para intentos por consigna (7bits).
-    };
+    }
     
     servidor_t servidor;
     int partidas = 0;
     int victorias = 0;
     if (servidor_crear(&servidor, argv[1], argv[3]) != 0){
         return 1;
-    };
+    }
     while (servidor_iniciar_juego(&servidor,(uint8_t)intentos) == 0){
         servidor_aceptar_cliente(&servidor);
         partidas += 1;
@@ -104,7 +108,7 @@ int main(int argc, char *argv[]){
         victorias += servidor_cliente_gano(&servidor);
         servidor_desconectar_cliente(&servidor);
         servidor_finalizar_juego(&servidor);
-    };
+    }
     printf("Resumen:\n");
     printf("\tVictorias: %d\n",victorias);
     printf("\tDerrotas: %d\n",(partidas - victorias));
