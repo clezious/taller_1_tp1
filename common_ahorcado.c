@@ -4,7 +4,7 @@
 #include <string.h>
 #include "common_ahorcado.h"
 
-void ahorcado_crear(ahorcado_t *self, char *palabra, int intentos){
+void ahorcado_crear(ahorcado_t *self, char *palabra, uint8_t intentos){
     self->intentos = intentos;
     self->juego_finalizado = false;
     self->palabra = malloc(strlen(palabra)+1);
@@ -43,14 +43,4 @@ void ahorcado_adivinar(ahorcado_t *self, char letra){
             self->juego_finalizado = true;
         }
     };
-}
-int ahorcado_estado(ahorcado_t *self){
-    printf("%s\n",self->palabra);
-    printf("%s\n",self->palabra_adivinada);
-    printf("%d\n",self->intentos);
-    printf("%d\n",self->juego_finalizado);
-    if (self->juego_finalizado){
-        return 1;
-    }
-    return 0;
 }
