@@ -7,9 +7,11 @@
 void ahorcado_crear(ahorcado_t *self, char *palabra, uint8_t intentos){
     self->intentos = intentos;
     self->juego_finalizado = false;
-    self->palabra = malloc(strlen(palabra)+1);
+    self->victoria = false;
+    self->longitud_palabra = strlen(palabra);
+    self->palabra = malloc(self->longitud_palabra + 1);
     strcpy(self->palabra,palabra);
-    self->palabra_adivinada = malloc(strlen(palabra)+1);
+    self->palabra_adivinada = malloc(self->longitud_palabra + 1);
     strcpy(self->palabra_adivinada,palabra);
     for (int i = 0; i < strlen(self->palabra); i++){
         self->palabra_adivinada[i]='_';
@@ -34,6 +36,7 @@ void ahorcado_adivinar(ahorcado_t *self, char letra){
     if (strcmp(self->palabra_adivinada,self->palabra)==0){
         //Si la palabra adivinada es igual a la palabra, entonces ganó.
         self->juego_finalizado = true;
+        self->victoria = true;
         return;
     }
     if (acierto == false){

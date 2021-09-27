@@ -7,8 +7,10 @@
 typedef struct {
     char * palabra;
     char * palabra_adivinada;
+    uint16_t longitud_palabra;
     uint8_t intentos;
     bool juego_finalizado;
+    bool victoria;
 } ahorcado_t;
 
 void ahorcado_crear(ahorcado_t *self, char *palabra, uint8_t intentos);
