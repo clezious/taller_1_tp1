@@ -30,13 +30,13 @@ int servidor_iniciar_juego(servidor_t *self, uint8_t intentos){
     //Si no hay una nueva palabra, devuelve 1    
     size_t bytes_palabra = 0;
     char *palabra = NULL;
-    char * ptr;
     if (getline(&palabra, &bytes_palabra, self->archivo_palabras) != -1){
         // Longitud máxima de palabra por consigna (16 bits)            
         if (bytes_palabra >= 65536){
             free(palabra);
             return -1;
         }
+        char * ptr;
         if ((ptr = strchr(palabra, '\n')) != NULL){
             *ptr = '\0';
         }

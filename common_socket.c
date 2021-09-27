@@ -54,12 +54,11 @@ void socket_aceptar_conexion(socket_t *self, socket_t *cliente){
 }
 
 ssize_t socket_enviar(socket_t *self, const char *buffer, size_t longitud){    
-    ssize_t bytes_enviados_totales = 0;
-    ssize_t bytes_enviados;
+    ssize_t bytes_enviados_totales = 0;    
     int reintentos = 0;
     while ((bytes_enviados_totales < longitud) 
             && (reintentos <= MAX_REINTENTOS)){
-        bytes_enviados = send(self->file_descriptor,
+        ssize_t bytes_enviados = send(self->file_descriptor,
                               &buffer[bytes_enviados_totales],
                               longitud - bytes_enviados_totales,
                               MSG_NOSIGNAL);
@@ -74,10 +73,9 @@ ssize_t socket_enviar(socket_t *self, const char *buffer, size_t longitud){
 }
 
 ssize_t socket_recibir(socket_t *self, char *buffer, size_t longitud){
-    ssize_t bytes_recibidos_totales = 0;
-    ssize_t bytes_recibidos;    
+    ssize_t bytes_recibidos_totales = 0;     
     while ((bytes_recibidos_totales < longitud)){
-        bytes_recibidos = recv(self->file_descriptor,
+        ssize_t bytes_recibidos = recv(self->file_descriptor,
                               &buffer[bytes_recibidos_totales],
                               longitud - bytes_recibidos_totales,
                               0);
