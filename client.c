@@ -7,18 +7,18 @@
 #include "common_socket.h"
 #include "client.h"
 
-//lee una palabra de stdin y le quiza el \n
+//lee una palabra de stdin y le quita el \n, luego la guarda en "cadena".
 void _leer_palabra(char **cadena){
     size_t bytes_linea = 0;
     ssize_t bytes_leidos;
     char * ptr;
 
     bytes_leidos = getline(cadena, &bytes_linea, stdin);
+    if (bytes_leidos==-1){ //Error
+        return;
+    }
     if ((ptr = strchr(*cadena, '\n')) != NULL){
         *ptr = '\0';
-    }    
-    if (bytes_leidos==-1){
-        return;
     }    
 }
 
@@ -26,16 +26,18 @@ void cliente_crear(cliente_t *self, char *host, char *servicio){
     socket_t socket;
     socket_crear(&socket);
     socket_conectar(&socket, host, servicio);
-    self->socket = socket;
-    
+    self->socket = socket;    
     self->juego_terminado = false;
 }
 
 void cliente_destruir(cliente_t *self){        
     socket_destruir(&self->socket);    
 }
+bool cliente_juego_terminado(cliente_t *self){        
+    return self->juego_terminado;
+}
 
-void cliente_recibir_de_servidor(cliente_t *self){
+void cliente_recibir_estado(cliente_t *self){
     uint8_t primer_byte = 0;
     uint16_t longitud_mensaje;
     char * palabra;
@@ -58,7 +60,11 @@ void cliente_recibir_de_servidor(cliente_t *self){
     }
     free(palabra);
 }
-
+void cliente_enviar_letra(cliente_t *self, char letra){
+    socket_enviar(&self->socket, &letra, 1);
+}
+// argv[1]: host
+// argv[2]: servicio
 int main(int argc, char *argv[]){ 
     if (argc != 3){
         return 1; //ERROR: Faltan parámetros
@@ -66,12 +72,12 @@ int main(int argc, char *argv[]){
     char *buffer = NULL;        
     cliente_t cliente;
     cliente_crear(&cliente, argv[1], argv[2]);
-    cliente_recibir_de_servidor(&cliente);
-    while (cliente.juego_terminado==false){
+    cliente_recibir_estado(&cliente);
+    while (cliente_juego_terminado(&cliente)==false){
         _leer_palabra(&buffer);
-        for (int i = 0; i < strlen(buffer); i++){
-            socket_enviar(&cliente.socket, &buffer[i], 1);            
-            cliente_recibir_de_servidor(&cliente);            
+        for (int i = 0; i < strlen(buffer); i++){            
+            cliente_enviar_letra(&cliente, buffer[i]);
+            cliente_recibir_estado(&cliente);            
         }
         free(buffer);        
     }    

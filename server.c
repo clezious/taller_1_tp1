@@ -40,8 +40,7 @@ int servidor_iniciar_juego(servidor_t *self, uint8_t intentos){
         char * ptr;
         if ((ptr = strchr(palabra, '\n')) != NULL){
             *ptr = '\0';
-        }
-        // printf("PALABRA LEIDA: %s\n",palabra);        
+        }               
         ahorcado_crear(&self->ahorcado,palabra,intentos);
         free(palabra);
         return 0;
@@ -86,8 +85,7 @@ void servidor_recibir_datos_cliente(servidor_t *self){
 int main(int argc, char *argv[]){
     if (argc != 4){
         return 1; //ERROR: Faltan parámetros
-    }
-    // printf("FILE NAME: %s\n",argv[3]);  
+    }    
     long intentos = strtol(argv[2], NULL, 10);
     if (intentos >= 128){
         return 1; //Valor máximo para intentos por consigna (7bits).
