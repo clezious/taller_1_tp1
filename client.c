@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <arpa/inet.h>
 #include "common_ahorcado.h"
 #include "common_socket.h"
 #include "client.h"
@@ -40,12 +41,13 @@ void cliente_recibir_de_servidor(cliente_t *self){
     char * palabra;
     socket_recibir(&self->socket, (char*)&primer_byte, 1);
     socket_recibir(&self->socket, (char*)&longitud_mensaje, 2);
+    longitud_mensaje = ntohs(longitud_mensaje);
     palabra = calloc(longitud_mensaje + 1, sizeof(char));
     socket_recibir(&self->socket, palabra, longitud_mensaje);
     if (primer_byte >= 128){ //La partida terminó
         self->juego_terminado = true;
         if (primer_byte==128){ //No quedaban intentos: perdió
-            printf("Perdiste! La palabra secreta era: %s\n",palabra);
+            printf("Perdiste! La palabra secreta era: '%s'\n",palabra);
         } else {
             printf("Ganaste!!\n");
         }

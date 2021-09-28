@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <arpa/inet.h>
 #include "common_ahorcado.h"
 #include "common_socket.h"
 #include "server.h"
@@ -68,8 +69,9 @@ void servidor_enviar_datos_cliente(servidor_t *self){
         palabra_a_enviar = self->ahorcado.palabra;
     }
     socket_enviar(&self->socket_cliente, (char*)&primer_byte, 1);
+    unsigned short longitud_palabra = htons(self->ahorcado.longitud_palabra);
     socket_enviar(&self->socket_cliente,
-                  (char*)&self->ahorcado.longitud_palabra,
+                  (char*)&longitud_palabra,
                   2);
     socket_enviar(&self->socket_cliente,
                   palabra_a_enviar,
