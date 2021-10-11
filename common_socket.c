@@ -5,7 +5,6 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdbool.h>
-#define MAX_REINTENTOS 5
 #define MAX_POOL_CONEXIONES 32
 
 // Guarda en direccion un addrinfo con el host y servicio indicados
@@ -55,18 +54,13 @@ void socket_aceptar_conexion(socket_t *self, socket_t *cliente){
 
 ssize_t socket_enviar(socket_t *self, const char *buffer, size_t longitud){    
     ssize_t bytes_enviados_totales = 0;    
-    int reintentos = 0;
-    while ((bytes_enviados_totales < longitud) 
-            && (reintentos <= MAX_REINTENTOS)){
+    while (bytes_enviados_totales < longitud){
         ssize_t bytes_enviados = send(self->file_descriptor,
                               &buffer[bytes_enviados_totales],
                               longitud - bytes_enviados_totales,
                               MSG_NOSIGNAL);
-        if (bytes_enviados != -1){ // Si no hay error en el envío
-            reintentos = 0;
+        if (bytes_enviados != -1){
             bytes_enviados_totales += bytes_enviados;
-        } else {
-            reintentos += 1;
         }
     }    
     return bytes_enviados_totales;
