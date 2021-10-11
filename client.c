@@ -8,7 +8,7 @@
 #include "client.h"
 
 //lee una palabra de stdin y le quita el \n, luego la guarda en "cadena".
-void _leer_palabra(char **cadena){
+static void _leer_palabra(char **cadena){
     size_t bytes_linea = 0;
     ssize_t bytes_leidos;
     char * ptr;
