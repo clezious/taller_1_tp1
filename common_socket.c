@@ -30,6 +30,7 @@ void socket_crear(socket_t *self){
 }
 
 void socket_destruir(socket_t *self){    
+    shutdown(self->file_descriptor,SHUT_RDWR);
     close(self->file_descriptor);
 }
 
