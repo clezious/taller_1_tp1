@@ -11,7 +11,7 @@
 // servidor es un bool que indica si la direccion es 
 // para un servidor o un cliente
 // si servidor es true, se utiliza el flag AI_PASSIVE, si no, NULL.
-void _getaddrinfo(struct addrinfo **direccion, 
+static void _getaddrinfo(struct addrinfo **direccion, 
                   const char *host, 
                   const char * servicio, 
                   bool servidor){
@@ -35,15 +35,21 @@ void socket_destruir(socket_t *self){
 }
 
 void socket_conectar(socket_t *self, const char *host, const char *servicio){
-    struct addrinfo *direccion;
+    struct addrinfo *direccion, *puntero;
+    bool conexion_exitosa = false
     _getaddrinfo(&direccion, host, servicio, false);
-    connect(self->file_descriptor, direccion->ai_addr, direccion->ai_addrlen);
+    for (puntero = direccion; puntero != NULL && conexion_exitosa == false; puntero = puntero->ai_next) {
+        // Se recorren las direcciones intentando conectar hasta que lo logre (o no). 
+        if (connect(self->file_descriptor, puntero->ai_addr, puntero->ai_addrlen) != -1) {            
+            conexion_exitosa = true;
+        }
+    }
     freeaddrinfo(direccion);
 }
 
 void socket_escuchar(socket_t *self, const char *host, const char *servicio){
     struct addrinfo *direccion;
-    _getaddrinfo(&direccion, host, servicio, true);
+    _getaddrinfo(&direccion, host, servicio, true);    
     bind(self->file_descriptor, direccion->ai_addr, direccion->ai_addrlen);
     freeaddrinfo(direccion);
     listen(self->file_descriptor,MAX_POOL_CONEXIONES);
