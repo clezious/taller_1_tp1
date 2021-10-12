@@ -57,18 +57,13 @@ A continuación se muestra, como ejemplo de lo mencionado, la función `socket_e
 ```c
 ssize_t socket_enviar(socket_t *self, const char *buffer, size_t longitud){    
     ssize_t bytes_enviados_totales = 0;    
-    int reintentos = 0;
-    while ((bytes_enviados_totales < longitud) 
-            && (reintentos <= MAX_REINTENTOS)){
+    while (bytes_enviados_totales < longitud){
         ssize_t bytes_enviados = send(self->file_descriptor,
                               &buffer[bytes_enviados_totales],
                               longitud - bytes_enviados_totales,
                               MSG_NOSIGNAL);
-        if (bytes_enviados != -1){ // Si no hay error en el envío
-            reintentos = 0;
+        if (bytes_enviados != -1){
             bytes_enviados_totales += bytes_enviados;
-        } else {
-            reintentos += 1;
         }
     }    
     return bytes_enviados_totales;
