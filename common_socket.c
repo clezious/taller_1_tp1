@@ -36,9 +36,11 @@ void socket_destruir(socket_t *self){
 
 void socket_conectar(socket_t *self, const char *host, const char *servicio){
     struct addrinfo *direccion, *puntero;
-    bool conexion_exitosa = false
+    bool conexion_exitosa = false;
     _getaddrinfo(&direccion, host, servicio, false);
-    for (puntero = direccion; puntero != NULL && conexion_exitosa == false; puntero = puntero->ai_next) {
+    for (puntero = direccion; 
+         puntero != NULL && conexion_exitosa == false; 
+         puntero = puntero->ai_next) {
         // Se recorren las direcciones intentando conectar hasta que lo logre (o no). 
         if (connect(self->file_descriptor, puntero->ai_addr, puntero->ai_addrlen) != -1) {            
             conexion_exitosa = true;
