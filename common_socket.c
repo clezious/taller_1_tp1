@@ -41,7 +41,8 @@ void socket_conectar(socket_t *self, const char *host, const char *servicio){
     for (puntero = direccion; 
          puntero != NULL && conexion_exitosa == false; 
          puntero = puntero->ai_next) {
-        // Se recorren las direcciones intentando conectar hasta que lo logre (o no). 
+        //Se recorren las direcciones intentando 
+        //conectar hasta que lo logre (o no). 
         if (connect(self->file_descriptor, puntero->ai_addr, puntero->ai_addrlen) != -1) {            
             conexion_exitosa = true;
         }
